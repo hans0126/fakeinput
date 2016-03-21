@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="invoice1">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="js/app.js"></script>
+    <style>
+		#base > div {
+				height: 1em;
+		}
+
+    </style>
+</head>
+
+<body ng-controller='first as f'>
+    {{f.a}}
+    <div contenteditable="true" id="base" placeholder="test"><div></div></div>
+</body>
+
+</html>

@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="invoice1">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
-    <script src="bower_components/angular/angular.min.js"></script>
-    <script src="js/app.js"></script>
     <style>
-		#base > div {
-				height: 1em;
-		}
-
+     #base{
+        padding: 1em;
+     }
+    #base > div {
+        padding: 0.1em;
+    }
     </style>
 </head>
 
-<body ng-controller='first as f'>
-    {{f.a}}
-    <div contenteditable="true" id="base"><div></div></div>
+<body>
+    <div contenteditable="true" id="base" placeholder="請輸入內容"></div>
+    <button type="button" id="b">test</button>
+    <script src="js/fakeinput.js"></script>
 </body>
 
 </html>
