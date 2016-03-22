@@ -26,16 +26,16 @@ var lastFocus = null
 
 btn.onclick = function() {
 
-   // console.log(sel.getRangeAt(0).startContainer);
+    // console.log(sel.getRangeAt(0).startContainer);
     var currentElement = lastFocus.startContainer.parentElement;
 
 
     if (currentElement.tagName == "DIV") {
-        console.log("DIV");
+        //console.log("DIV");
         var _span = null;
         var currentText = lastFocus.startContainer.textContent;
         var nextText = currentText.substring(lastFocus.startOffset);
-        preText = currentText.substring(0, lastFocus.startOffset);
+        var preText = currentText.substring(0, lastFocus.startOffset);
 
         lastFocus.startContainer.parentElement.innerHTML = "";
 
@@ -47,7 +47,8 @@ btn.onclick = function() {
         }
 
         _span = document.createElement("SPAN");
-        _span.innerHTML = " oh ";
+        _span.innerHTML = " insert ";
+        _span.setAttribute("contentEditable", "false");
         lastFocus.startContainer.appendChild(_span);
 
         if (nextText) {
@@ -58,18 +59,18 @@ btn.onclick = function() {
 
 
     } else if (currentElement.tagName == "SPAN") {
-        console.log("SPAN");
+        //console.log("SPAN");
         var _span = null;
         var preElement = lastFocus.startContainer.parentElement.nextSibling; //前一個元素，定位點
         var currentRoot = lastFocus.startContainer.parentElement.parentElement;
         var currentText = lastFocus.startContainer.textContent;
         var nextText = currentText.substring(lastFocus.startOffset);
         var newElement = null;
-        preText = currentText.substring(0, lastFocus.startOffset);
+        var preText = currentText.substring(0, lastFocus.startOffset);
 
 
         currentRoot.removeChild(lastFocus.startContainer.parentElement);
-      
+
 
         if (preText) {
             _span = document.createElement("SPAN");
@@ -78,7 +79,7 @@ btn.onclick = function() {
         }
 
         _span = document.createElement("SPAN");
-        _span.innerHTML = " <a href='#'> 123456 </a>";
+        _span.innerHTML = " 123456 ";
         newElement = currentRoot.insertBefore(_span, newElement.nextSibling);
 
 
@@ -143,7 +144,10 @@ el.onclick = function() {
         curElement.removeChild(placeholder);
         var contentElement = document.createElement("DIV");
         contentElement.appendChild(document.createElement("BR"));
-        contentElement.className = "group";
+
+
+        contentElement.className = "group first";
+
         var lastInsertElement = curElement.appendChild(contentElement);
 
         range.setStart(lastInsertElement, 0);
@@ -151,19 +155,13 @@ el.onclick = function() {
         range.collapse(true);
         sel.removeAllRanges();
         sel.addRange(range);
+
+
+
     }
 
 
-    /*
-        if (curElement.childNodes.length == 0) { //不準確判斷 空白也被當成一個節點
-            var _d = document.createElement("DIV");
-            var aa = curElement.appendChild(_d);
-            range.setStart(aa, 0);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-        }
-*/
+    // console.log(sel.getRangeAt(0).startContainer.getAttribute("class"));
 
 
     curElement.onkeydown = function(e) {
@@ -182,52 +180,139 @@ el.onclick = function() {
                 e.returnValue = false;
             }
 
-
             var dd = document.createElement("DIV");
             dd.className = "group";
-            dd.appendChild(document.createElement("BR"));
-            curElement.appendChild(dd);
-            count++;
 
-            var newLine = curElement.insertBefore(dd, sel.getRangeAt(0).startContainer.nextSibling);
+
+            //   var currentElemtnt = sel.getRangeAt(0).startContainer;
+            //當下若選擇文字，文字沒有child
+            var currentSelect = null;
+
+            var baseElement = null;
+
+            if (sel.getRangeAt(0).startContainer.hasChildNodes()) {
+                currentSelect = sel.getRangeAt(0).startContainer;
+            } else {
+                currentSelect = sel.getRangeAt(0).startContainer.parentElement;
+            }
+
+
+            //  console.log(currentSelect.tagName);
+
+            if (currentSelect.tagName == "DIV") {
+
+                var currentText = currentSelect.textContent;
+                var nextText = currentText.substring(sel.getRangeAt(0).startOffset);
+                var preText = currentText.substring(0, sel.getRangeAt(0).startOffset);
+
+                if (!preText || preText == "") {
+                    preText = "<br/>";
+                }
+
+                if (!nextText || nextText == "") {
+                    nextText = "<br/>";
+                }
+
+                currentSelect.innerHTML = preText;
+                baseElement = currentSelect;
+                dd.innerHTML = nextText;
+
+            } else if (currentSelect.tagName == "SPAN") {
+                //  console.log("SPAN");
+
+                // get parent element
+
+                var _textObj = {
+                    pre: [],
+                    next: []
+                }
+
+                var _k = false;
+
+                var _parent = currentSelect.parentElement;
+
+
+
+                for (var i = 0; i < _parent.childNodes.length; i++) {
+                    if (_parent.childNodes[i] == currentSelect) {
+                        _k = true;
+                    }
+
+                    if (_k) {
+                        _textObj.next.push(_parent.childNodes[i]);
+                    } else {
+                        _textObj.pre.push(_parent.childNodes[i]);
+                    }
+                }
+
+                // console.log(_textObj.next[0].textContent);
+
+                var currentText = _textObj.next[0].textContent;
+                var nextText = currentText.substring(sel.getRangeAt(0).startOffset);
+                var preText = currentText.substring(0, sel.getRangeAt(0).startOffset);
+
+
+                var _span = document.createElement("SPAN");
+                _span.innerHTML = preText;
+                _textObj.pre.push(_span);
+
+                while (_parent.firstChild) {
+                    _parent.removeChild(_parent.firstChild);
+                }
+
+                for (var i = 0; i < _textObj.pre.length; i++) {
+                    _parent.appendChild(_textObj.pre[i]);
+                }
+
+                var _span = document.createElement("SPAN");
+                _span.innerHTML = nextText;
+
+                _textObj.next.splice(0, 1);
+
+                _textObj.next.unshift(_span);
+
+                var dd = document.createElement("DIV");
+
+                for (var i = 0; i < _textObj.next.length; i++) {
+
+
+                    dd.appendChild(_textObj.next[i]);
+                }
+
+
+                baseElement = _parent;
+
+
+            }       
+
+          
+
+            if (curElement.childNodes.length == 1 || (baseElement == curElement.lastChild)) { //w
+                console.log("first");
+                var newLine = curElement.appendChild(dd);
+            } else {
+                console.log("normal");
+                var newLine = curElement.insertBefore(dd, baseElement.nextSibling);
+            }
+
             range.setStart(newLine, 0);
             range.collapse(true);
             sel.removeAllRanges();
             sel.addRange(range);
-            /*
-
-            // target.innerHTML = '';
-
-            //  console.log(sel.getRangeAt(0).startContainer);
-            //  console.log(e);
-            var inserElement = document.createElement("DIV");
-            var _br = document.createElement("BR");
-            inserElement.className = "a" + Math.floor(Math.random() * 5);
-            inserElement.appendChild(_br);
-
-            //
-            // console.log(sel.getRangeAt(0).startOffset);
-
-            var currentText = sel.getRangeAt(0).startContainer.textContent;
-
-
-            var nextText = currentText.substring(sel.getRangeAt(0).startOffset);
-            currentText = currentText.substring(0, sel.getRangeAt(0).startOffset);
-            sel.getRangeAt(0).startContainer.textContent = currentText;
-            inserElement.textContent = nextText;
-
-            var abc = curElement.insertBefore(inserElement, sel.getRangeAt(0).startContainer.nextSibling);
-
-
-            range.setStart(abc, 0);
-
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-            //console.log(abc);
-
-            */
         }
+
+
+        if (keyCode === 8){
+              if (e.preventDefault) {
+                e.preventDefault();
+            } else {
+                e.returnValue = false;
+            }
+           console.log(sel.getRangeAt(0).startOffset);
+           //backspace 
+          
+        }
+
     }
 
 
