@@ -26,39 +26,92 @@ var lastFocus = null
 
 btn.onclick = function() {
 
-
+   // console.log(sel.getRangeAt(0).startContainer);
     var currentElement = lastFocus.startContainer.parentElement;
 
 
     if (currentElement.tagName == "DIV") {
         console.log("DIV");
+        var _span = null;
         var currentText = lastFocus.startContainer.textContent;
         var nextText = currentText.substring(lastFocus.startOffset);
-        currentText = currentText.substring(0, lastFocus.startOffset);
+        preText = currentText.substring(0, lastFocus.startOffset);
 
-        //console.log(currentText);
-        //console.log(nextText);
-
-        // console.log(lastFocus.startContainer.parentElement);
         lastFocus.startContainer.parentElement.innerHTML = "";
 
-        var ia = document.createElement("SPAN");
-        var ib = document.createElement("SPAN");
-        var ic = document.createElement("SPAN");
 
-        ia.innerHTML = currentText;
-        ib.innerHTML = nextText;
-        ic.innerHTML = " oh ";
+        if (preText) {
+            _span = document.createElement("SPAN");
+            _span.innerHTML = preText;
+            lastFocus.startContainer.appendChild(_span);
+        }
 
-        lastFocus.startContainer.appendChild(ia);
-        lastFocus.startContainer.appendChild(ic);
-        lastFocus.startContainer.appendChild(ib);
+        _span = document.createElement("SPAN");
+        _span.innerHTML = " oh ";
+        lastFocus.startContainer.appendChild(_span);
+
+        if (nextText) {
+            _span = document.createElement("SPAN");
+            _span.innerHTML = nextText;
+            lastFocus.startContainer.appendChild(_span);
+        }
+
+
     } else if (currentElement.tagName == "SPAN") {
         console.log("SPAN");
-        
-        var preElement =lastFocus.startContainer.parentElement.previousSibling;
+        var _span = null;
+        var preElement = lastFocus.startContainer.parentElement.nextSibling; //前一個元素，定位點
+        var currentRoot = lastFocus.startContainer.parentElement.parentElement;
+        var currentText = lastFocus.startContainer.textContent;
+        var nextText = currentText.substring(lastFocus.startOffset);
+        var newElement = null;
+        preText = currentText.substring(0, lastFocus.startOffset);
 
-        console.log(preElement);
+
+        currentRoot.removeChild(lastFocus.startContainer.parentElement);
+      
+
+        if (preText) {
+            _span = document.createElement("SPAN");
+            _span.innerHTML = preText;
+            newElement = currentRoot.insertBefore(_span, preElement);
+        }
+
+        _span = document.createElement("SPAN");
+        _span.innerHTML = " <a href='#'> 123456 </a>";
+        newElement = currentRoot.insertBefore(_span, newElement.nextSibling);
+
+
+        if (nextText) {
+            _span = document.createElement("SPAN");
+            _span.innerHTML = nextText;
+            newElement = currentRoot.insertBefore(_span, newElement.nextSibling);
+        }
+
+
+
+
+        //console.log(lastFocus.startContainer.parentElement.parentElement.nodeName);
+
+        /*
+                if (preText) {
+                    _span = document.createElement("SPAN");
+                    _span.innerHTML = preText;
+                    lastFocus.startContainer.appendChild(_span);
+                }
+        */
+
+        // console.log(currentText);
+
+
+
+        /*
+        if(preElement){
+            console.log("has");
+        }else{
+            console.log("not has");
+        }
+        */
     }
 
 
